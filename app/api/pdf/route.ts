@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
-
 import puppeteerCore from "puppeteer-core";
 import chromium from "@sparticuz/chromium-min";
+import path from "path";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
@@ -17,11 +17,10 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    let browser:any;
-
+    let browser: any;
 
     if (process.env.VERCEL_ENV === "production") {
-      // ✅ Use chromium-min default executablePath (no URL needed)
+      // Vercel production
       const executablePath = await chromium.executablePath();
       browser = await puppeteerCore.launch({
         executablePath,
@@ -30,39 +29,29 @@ export async function GET(request: NextRequest) {
         defaultViewport: chromium.defaultViewport,
       });
     } else {
-      console.log("Launching Puppeteer in development mode");
-      let browser = await puppeteerCore.launch({
-  executablePath: await chromium.executablePath(),
-  args: chromium.args,
-  headless: chromium.headless,
-  defaultViewport: chromium.defaultViewport,
-});
+      // Local Windows/macOS
+      const localChromiumPath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"; // adjust if different
+      browser = await puppeteerCore.launch({
+        executablePath: localChromiumPath,
+        headless: true,
+        args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      });
     }
 
     const page = await browser.newPage();
 
-    // ✅ Safe fallback for BASE_URL
     const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:8888";
-const url = new URL(`${baseUrl}/resume/download`);
-url.search = searchParams.toString();
+    const url = new URL(`${baseUrl}/resume/download`);
+    url.search = searchParams.toString();
 
     await page.goto(url.toString(), { waitUntil: "networkidle0", timeout: 80000 });
 
-    // ✅ Ensure your /resume/download has this div
-    await page.waitForSelector("#resume-content", {
-      visible: true,
-      timeout: 30000,
-    });
+    await page.waitForSelector("#resume-content", { visible: true, timeout: 30000 });
 
     const pdf = await page.pdf({
       format: "A4",
       printBackground: true,
-      margin: {
-        top: "20px",
-        right: "10px",
-        bottom: "20px",
-        left: "10px",
-      },
+      margin: { top: "20px", right: "10px", bottom: "20px", left: "10px" },
     });
 
     await browser.close();

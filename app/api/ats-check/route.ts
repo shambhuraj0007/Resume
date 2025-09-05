@@ -1,6 +1,6 @@
 // app/api/ats-check/route.ts
 import { NextRequest, NextResponse } from "next/server";
-import pdfParse from "pdf-parse";
+const pdfParse = require('pdf-parse');
 
 export async function POST(req: NextRequest) {
   try {
