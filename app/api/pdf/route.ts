@@ -1,5 +1,4 @@
 import { NextResponse, type NextRequest } from "next/server";
-import puppeteer from "puppeteer";
 
 import puppeteerCore from "puppeteer-core";
 import chromium from "@sparticuz/chromium-min";
@@ -18,7 +17,8 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    let browser: puppeteer.Browser | puppeteerCore.Browser;
+    let browser:any;
+
 
     if (process.env.VERCEL_ENV === "production") {
       // ✅ Use chromium-min default executablePath (no URL needed)
@@ -31,10 +31,12 @@ export async function GET(request: NextRequest) {
       });
     } else {
       console.log("Launching Puppeteer in development mode");
-      browser = await puppeteer.launch({
-        headless: true,
-        args: ["--no-sandbox", "--disable-setuid-sandbox"],
-      });
+      let browser = await puppeteerCore.launch({
+  executablePath: await chromium.executablePath(),
+  args: chromium.args,
+  headless: chromium.headless,
+  defaultViewport: chromium.defaultViewport,
+});
     }
 
     const page = await browser.newPage();
