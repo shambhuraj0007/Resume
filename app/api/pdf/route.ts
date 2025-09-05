@@ -46,7 +46,7 @@ export async function GET(request: NextRequest) {
 
     await page.goto(url.toString(), { waitUntil: "networkidle0", timeout: 80000 });
 
-    await page.waitForSelector("#resume-content", { visible: true, timeout: 30000 });
+    await page.waitForSelector("#resume-content", { visible: true, timeout: 80000 });
 
     const pdf = await page.pdf({
       format: "A4",
