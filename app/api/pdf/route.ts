@@ -1,10 +1,10 @@
 import { NextResponse, type NextRequest } from "next/server";
-import puppeteerCore from "puppeteer-core";
-import chromium from "@sparticuz/chromium-min";
-import path from "path";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 
 export const dynamic = "force-dynamic";
 export const maxDuration = 60;
+export const runtime = "nodejs"; // ⬅️ force Node runtime, not Edge
 
 export async function GET(request: NextRequest) {
   const { searchParams } = new URL(request.url);
@@ -16,23 +16,22 @@ export async function GET(request: NextRequest) {
     );
   }
 
+  let browser;
   try {
-    let browser: any;
-
     if (process.env.VERCEL_ENV === "production") {
-      // Vercel production
+      // Vercel / Serverless
       const executablePath = await chromium.executablePath();
-      browser = await puppeteerCore.launch({
-        executablePath,
+
+      browser = await puppeteer.launch({
         args: chromium.args,
-        headless: chromium.headless,
-        defaultViewport: chromium.defaultViewport,
+        executablePath,
+        headless: true, // always true on serverless
       });
     } else {
-      // Local Windows/macOS
-      const localChromiumPath = "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe"; // adjust if different
-      browser = await puppeteerCore.launch({
-        executablePath: localChromiumPath,
+      // Local dev (change Chrome path if needed)
+      browser = await puppeteer.launch({
+        executablePath:
+          "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
         headless: true,
         args: ["--no-sandbox", "--disable-setuid-sandbox"],
       });
@@ -40,15 +39,25 @@ export async function GET(request: NextRequest) {
 
     const page = await browser.newPage();
 
-    const baseUrl = process.env.NEXT_PUBLIC_URL || "http://localhost:8888";
+    const baseUrl = process.env.NEXT_PUBLIC_URL;
+    if (!baseUrl) throw new Error("NEXT_PUBLIC_URL is not defined");
+
     const url = new URL(`${baseUrl}/resume/download`);
     url.search = searchParams.toString();
 
-    await page.goto(url.toString(), { waitUntil: "networkidle0", timeout: 80000 });
+    console.log("Navigating to:", url.toString());
 
-    await page.waitForSelector("#resume-content", { visible: true, timeout: 80000 });
+    await page.goto(url.toString(), {
+      waitUntil: "networkidle0",
+      timeout: 120000,
+    });
 
-    const pdf = await page.pdf({
+    await page.waitForSelector("#resume-content", {
+      visible: true,
+      timeout: 60000,
+    });
+
+    const pdfBuffer = await page.pdf({
       format: "A4",
       printBackground: true,
       margin: { top: "20px", right: "10px", bottom: "20px", left: "10px" },
@@ -56,15 +65,17 @@ export async function GET(request: NextRequest) {
 
     await browser.close();
 
-    return new NextResponse(pdf, {
-      status: 200,
-      headers: {
-        "Content-Type": "application/pdf",
-        "Content-Disposition": `attachment; filename=resume.pdf`,
-      },
-    });
+   return new Response(Buffer.from(pdfBuffer), {
+  status: 200,
+  headers: {
+    "Content-Type": "application/pdf",
+    "Content-Disposition": "attachment; filename=resume.pdf",
+  },
+});
   } catch (error: any) {
     console.error("PDF generation error:", error);
+    if (browser) await browser.close();
+
     return NextResponse.json(
       { message: "Error generating PDF", error: error?.message },
       { status: 500 }
