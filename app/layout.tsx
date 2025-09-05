@@ -9,12 +9,12 @@ import { Analytics } from "@vercel/analytics/react"
 const inter = Inter({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
-  title: 'ResumeItNow - Free Open Source Resume Builder',
-  description: 'Create professional, ATS-friendly resumes for free. No watermarks, no hidden fees. AI-powered resume builder with modern templates.',
-  keywords: 'resume builder, cv maker, free resume, ATS-friendly resume, AI resume builder, professional templates',
-  authors: [{ name: 'Mahesh Paul J' }],
-  creator: 'ResumeItNow',
-  publisher: 'ResumeItNow',
+  title: 'ResumeAI by Shambhuraj - Smart AI Resume Builder',
+  description: 'Build professional, ATS-friendly resumes effortlessly with ResumeAI. Powered by AI, featuring modern templates and personalized suggestions.',
+  keywords: 'resume builder, AI resume, cv maker, professional resume, ATS-friendly, Shambhuraj',
+  authors: [{ name: 'Shambhuraj' }],
+  creator: 'Shambhuraj',
+  publisher: 'ResumeAI',
   formatDetection: {
     email: false,
     address: false,
@@ -25,16 +25,16 @@ export const metadata: Metadata = {
     canonical: '/',
   },
   openGraph: {
-    title: 'ResumeItNow - Free Open Source Resume Builder',
-    description: 'Create professional, ATS-friendly resumes for free. No watermarks, no hidden fees. AI-powered resume builder with modern templates.',
+    title: 'ResumeAI by Shambhuraj - Smart AI Resume Builder',
+    description: 'Build professional, ATS-friendly resumes effortlessly with ResumeAI. Powered by AI, featuring modern templates and personalized suggestions.',
     url: 'https://resumeitnow.vercel.app',
-    siteName: 'ResumeItNow',
+    siteName: 'ResumeAI',
     images: [
       {
         url: '/assets/ss.png',
         width: 1200,
         height: 630,
-        alt: 'ResumeItNow Preview',
+        alt: 'ResumeAI Preview',
       },
     ],
     locale: 'en_US',
@@ -42,10 +42,10 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'ResumeItNow - Free Open Source Resume Builder',
-    description: 'Create professional, ATS-friendly resumes for free. No watermarks, no hidden fees. AI-powered resume builder with modern templates.',
+    title: 'ResumeAI by Shambhuraj - Smart AI Resume Builder',
+    description: 'Build professional, ATS-friendly resumes effortlessly with ResumeAI. Powered by AI, featuring modern templates and personalized suggestions.',
     images: ['/assets/ss.png'],
-    creator: '@resumeitnow',
+    creator: '@shambhuraj',
   },
   robots: {
     index: true,
@@ -59,7 +59,7 @@ export const metadata: Metadata = {
     },
   },
   verification: {
-    google: 'IVOjL--iVz33j73JnMvQT2vZsRoEje6C9GQGxF8BlxQ',
+    google: 'YOUR_GOOGLE_SITE_VERIFICATION_CODE', // replace with your code
   },
   category: 'technology',
 }
@@ -79,16 +79,15 @@ export default async function RootLayout({
         <link rel="icon" href="/favicon.ico" />
         <link rel="manifest" href="/site.webmanifest" />
         <meta name="theme-color" content="#ffffff" />
-        <meta name="google-site-verification" content="IVOjL--iVz33j73JnMvQT2vZsRoEje6C9GQGxF8BlxQ" />
-        {/* Schema.org markup for Google */}
+        <meta name="google-site-verification" content="YOUR_GOOGLE_SITE_VERIFICATION_CODE" />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
             __html: JSON.stringify({
               "@context": "http://schema.org",
               "@type": "WebApplication",
-              "name": "ResumeItNow",
-              "description": "Create professional, ATS-friendly resumes for free. No watermarks, no hidden fees. AI-powered resume builder with modern templates.",
+              "name": "ResumeAI",
+              "description": "Build professional, ATS-friendly resumes effortlessly with ResumeAI. Powered by AI, featuring modern templates and personalized suggestions.",
               "url": "https://resumeitnow.vercel.app",
               "applicationCategory": "Resume Builder",
               "operatingSystem": "Web Browser",
@@ -98,8 +97,8 @@ export default async function RootLayout({
                 "priceCurrency": "USD"
               },
               "creator": {
-                "@type": "Organization",
-                "name": "ResumeItNow"
+                "@type": "Person",
+                "name": "Shambhuraj"
               }
             })
           }}
